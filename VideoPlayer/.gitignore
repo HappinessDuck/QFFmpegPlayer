@@ -1,0 +1,8 @@
+#忽略根目录下Debug和Release文件夹下的所有文件夹
+/[Dd]ebug/*/
+/[Rr]elease/*/
+
+
+#
+*.obj
+*.user
