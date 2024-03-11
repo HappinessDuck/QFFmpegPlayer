@@ -52,8 +52,6 @@ public:
         return QString(avcodec_configuration());
     }
 
-
-
     //解码同步线程定义成友元类
     friend class FFmpegSyncList;
 
@@ -68,6 +66,7 @@ public:
 
     //释放缓存
     void clear();
+    void stopPlay();
 
     int test();
 
@@ -112,7 +111,7 @@ private:
     //媒体文件或媒体流的构成和基本信息
     AVFormatContext* pFormatCtx = NULL;
     //字典集合，键值对，用于配置相关信息
-    AVDictionary* opt = NULL;
+    AVDictionary* options = NULL;
 
     //寻找流
     int videoStreamIndex = -1;
@@ -144,12 +143,12 @@ private:
     uint8_t *videoData;               //解码后图片数据
     uint8_t *audioData;               //解码后音频数据
 
-    AVPacket *avPacket;               //包对象
-    AVFrame *videoFrame;              //视频帧对象
-    AVFrame *videoFrameDst;           //视频帧转换后的对象
-    AVFrame *audioFrame;              //音频帧对象
-    SwsContext *videoSwsCtx;          //视频数据转换对象
-    SwrContext *audioSwrCtx;          //音频数据转换对象重采样
+    AVPacket *avPacket = NULL;               //包对象
+    AVFrame *videoFrame = NULL;              //视频帧对象
+    AVFrame *videoFrameDst = NULL;           //视频帧转换后的对象
+    AVFrame *audioFrame = NULL;              //音频帧对象
+    SwsContext *videoSwsCtx = NULL;          //视频数据转换对象
+    SwrContext *audioSwrCtx = NULL;          //音频数据转换对象重采样
 
     FFmpegSyncList *videoSync;        //视频同步队列
     FFmpegSyncList *audioSync;        //音频同步队列

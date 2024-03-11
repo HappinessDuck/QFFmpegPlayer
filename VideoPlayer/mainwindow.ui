@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>804</width>
-    <height>574</height>
+    <width>871</width>
+    <height>595</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -22,11 +22,11 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="8,2">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="9,1">
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>TextLabel</string>
+         <string>                                                               </string>
         </property>
        </widget>
       </item>

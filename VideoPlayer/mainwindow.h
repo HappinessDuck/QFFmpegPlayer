@@ -9,7 +9,8 @@
  * 作者：wqj  QQ:1107097641
  * 博客地址：
  *      日期          版本号                描述
- * 2024年03年11日     v1.0.0         主窗口，添加视频列表窗口
+ * 2024年03年05日     v1.0.0         主窗口，添加视频列表窗口
+ * 2024年03年11日     v1.1.0         添加播放功能，按钮图标
 \**************************************************/
 
 #include "FFmpegServer.h"
@@ -35,21 +36,22 @@ public:
 private:
     Ui::MainWindow *ui;
     FFmpegServer *m_FFmpegServer;
-
-    bool isPause;
-    bool isSoundOff;
-
     void connectControl();
+
+    bool isPause;           //是否暂停
+    bool isSoundOff;        //是否静音
     int curPos;             //当前进度
     int allPos;             //总进度
-
-
 
     QPushButton *btn_open;
     QListWidget *listWidget;
 
     QString videoPath;
     QList<QString> getFilesInDirectory();
+
+
+    void clear();
+
 
 private slots:
     //显示播放列表
@@ -64,10 +66,7 @@ private slots:
     void openFile();        //获取路径所有播放视频
     void handleItemDoubleClicked(QListWidgetItem *item);
 
-
-    void changeButtonStatus();
-
-
+    void setIcon(QString btnName, int flag);
 signals:
 //    void changePos_signal(int value);
 //    void changeVolume_signal(int value);
@@ -82,5 +81,6 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void enterEvent(QEvent *event) override;
     void leaveEvent(QEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 };
 #endif // MAINWINDOW_H

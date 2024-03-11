@@ -2,6 +2,8 @@
 /[Dd]ebug/*/
 /[Rr]elease/*/
 
+/Debug/
+/Release/
 
 #
 *.obj

@@ -64,22 +64,22 @@ void FFmpegServer::setPlayUrl(const QString &url)
 void FFmpegServer::setOption()
 {
     //设置缓存大小,1080p可将值调大
-    av_dict_set(&opt, "buffer_size", "8192000", 0);
+    av_dict_set(&options, "buffer_size", "8192000", 0);
     //以tcp方式打开,如果以udp方式打开将tcp替换为udp
-    av_dict_set(&opt, "rtsp_transport", "tcp", 0);
+    av_dict_set(&options, "rtsp_transport", "tcp", 0);
     //设置超时断开连接时间,单位微秒,3000000表示3秒
-    av_dict_set(&opt, "stimeout", "3000000", 0);
+    av_dict_set(&options, "stimeout", "3000000", 0);
     //设置最大时延,单位微秒,1000000表示1秒
-    av_dict_set(&opt, "max_delay", "1000000", 0);
+    av_dict_set(&options, "max_delay", "1000000", 0);
     //自动开启线程数
-    av_dict_set(&opt, "threads", "auto", 0);
+    av_dict_set(&options, "threads", "auto", 0);
 
     //设置编码格式
-    //av_dict_set(&pOptions, "input_format", "mjpeg", 0);
+    //av_dict_set(&options, "input_format", "mjpeg", 0);
     //设置分辨率
-    //av_dict_set(&pOptions,"video_size","800x600",0);
+    //av_dict_set(&options,"video_size","800x600",0);
     //设置帧率
-    //av_dict_set(&pOptions,"framerate","30",0);
+    //av_dict_set(&options,"framerate","30",0);
 }
 
 int FFmpegServer::setInput()
@@ -97,7 +97,7 @@ int FFmpegServer::setInput()
 
     //打开输入
     //摄像头--本地视频--网络流视频
-    int ret = avformat_open_input(&pFormatCtx, playUrl.toStdString().data(), iFmt, &opt);
+    int ret = avformat_open_input(&pFormatCtx, playUrl.toStdString().data(), iFmt, &options);
     if(ret != 0)
     {
         lastError = "Couldn't open input stream." + playUrl;
@@ -314,19 +314,6 @@ int FFmpegServer::initInput()
 
     return 0;
 }
-
-
-
-void FFmpegServer::clear()
-{
-//    sws_freeContext(swsCtx);
-//    av_free(rgbBuffer);
-//    av_free(pFrame);
-//    av_free(pFrameRGB);
-//    avcodec_close(videoCodecContext);// 关闭编码/解码器
-//    avformat_close_input(&pFormatCtx);//关闭文件上下
-}
-
 
 
 int FFmpegServer::test()
@@ -593,6 +580,75 @@ void FFmpegServer::run()
 
     qDebug()<<"play thread end";
 
+
+}
+
+void FFmpegServer::stopPlay()
+{
+    isRun = false;
+}
+
+void FFmpegServer::clear()
+{
+    isRun = false;
+
+    if (videoSwsCtx != NULL)
+    {
+        sws_freeContext(videoSwsCtx);
+        videoSwsCtx = NULL;
+    }
+
+    if (audioSwrCtx != NULL)
+    {
+        swr_free(&audioSwrCtx);
+        audioSwrCtx = NULL;
+    }
+
+    if (avPacket != NULL)
+    {
+        av_packet_free(&avPacket);
+        avPacket = NULL;
+    }
+
+    if (videoFrame != NULL)
+    {
+        av_frame_free(&videoFrame);
+        videoFrame = NULL;
+    }
+
+    if (videoFrameDst != NULL)
+    {
+        av_frame_free(&videoFrameDst);
+        videoFrameDst = NULL;
+    }
+
+    if (audioFrame != NULL)
+    {
+        av_frame_free(&audioFrame);
+        audioFrame = NULL;
+    }
+
+    if (videoCodecContext != NULL)
+    {
+        avcodec_close(videoCodecContext);
+        videoCodecContext = NULL;
+    }
+
+    if (audioCodecContext != NULL)
+    {
+        avcodec_close(audioCodecContext);
+        audioCodecContext = NULL;
+    }
+
+    if (pFormatCtx != NULL)
+    {
+        avformat_close_input(&pFormatCtx);
+        pFormatCtx = NULL;
+    }
+
+    av_dict_free(&options);
+
+
     //停止解码同步线程
     if (audioSync->isRunning())
     {
@@ -609,9 +665,9 @@ void FFmpegServer::run()
     }
 
 
+    m_QAudioOutputStrategy.clear();
+
 }
-
-
 
 
 

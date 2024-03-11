@@ -77,6 +77,21 @@ public:
         return false;
     }
 
+    void clear()
+    {
+        if(audioOutput != NULL)
+         {
+             delete audioOutput;
+             audioOutput = NULL;
+         }
+
+        if(audioDevice != NULL)
+        {
+            delete audioDevice;
+            audioDevice = NULL;
+        }
+    }
+
 
 private:
     QAudioOutput* audioOutput = nullptr;

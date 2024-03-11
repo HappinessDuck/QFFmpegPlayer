@@ -41,19 +41,13 @@ MainWindow::MainWindow(QWidget *parent)
     //播放列表--双击播放视频
     listWidget = new QListWidget();
     connect(listWidget, &QListWidget::itemDoubleClicked, this, &MainWindow::handleItemDoubleClicked);
-//    QObject::connect(listWidget, &QListWidget::itemDoubleClicked, [&](QListWidgetItem *item){
-//        qDebug() << "Double clicked: " << item->text();
-//    });
+    //    QObject::connect(listWidget, &QListWidget::itemDoubleClicked, [&](QListWidgetItem *item){
+    //        qDebug() << "Double clicked: " << item->text();
+    //    });
 
 
     m_FFmpegServer = new FFmpegServer(this);
     connectControl();
-
-    //    QPropertyAnimation animation(controlview, "geometry");
-    //    animation.setDuration(1000); // 设置动画持续时间为1秒
-    //    animation.setStartValue(controlview->geometry());
-    //    animation.setEndValue(QRect(150, 250, 100, 30)); // 设置按钮最终位置在窗口底部
-    //    animation.start();
 
     //init
     isPause = false;
@@ -86,17 +80,41 @@ void MainWindow::connectControl()
 {
     //bind QPushButton
     const QStringList buttonNames = {"pushButton_list", "pushButton_start",
-                                     "pushButton_forwardSecond" "pushButton_backwardSecond",
-                                     "pushButton_soundOff"};
+                                     "pushButton_previous","pushButton_next",
+                                     "pushButton_soundOff",
+                                     "pushButton_forwardSecond","pushButton_backwardSecond"
+                                    };
     for (const QString &buttonName : buttonNames) {
         QPushButton *childButton = ui->controlWidget->findChild<QPushButton*>(buttonName);
-        if (childButton) {
-            if (buttonName == "pushButton_list") {
+        if (childButton)
+        {
+            if (buttonName == "pushButton_list")
+            {
+                setIcon(buttonName, 33);//列表图标
                 connect(childButton, &QPushButton::clicked, this, &MainWindow::showPlayListView);
-            } else if (buttonName == "pushButton_start") {
+            } else if(buttonName == "pushButton_start")
+            {
+                setIcon(buttonName, 61);//播放图标
                 connect(childButton, &QPushButton::clicked, this, &MainWindow::pauseVideo);
-            }else if (buttonName == "pushButton_soundOff") {
+            }else if(buttonName == "pushButton_soundOff")
+            {
+                setIcon(buttonName, 68);//声音图标
                 connect(childButton, &QPushButton::clicked, this, &MainWindow::soundOff);
+            }else if(buttonName == "pushButton_previous")
+            {
+                setIcon(buttonName, 65);//上一集
+            }else if(buttonName == "pushButton_next")
+            {
+                setIcon(buttonName, 64);//下一集
+            }
+            else if(buttonName == "pushButton_forwardSecond")
+            {
+                setIcon(buttonName, 67);//向前s
+                //                connect(childButton, &QPushButton::clicked, this, &MainWindow::soundOff);
+            }else if(buttonName == "pushButton_backwardSecond")
+            {
+                setIcon(buttonName, 66);//向后s
+                //                connect(childButton, &QPushButton::clicked, this, &MainWindow::soundOff);
             }
         }
     }
@@ -124,6 +142,7 @@ void MainWindow::connectControl()
         QLabel *child = ui->controlWidget->findChild<QLabel*>(name);
         if (child) {
             child->setAlignment(Qt::AlignCenter);
+            child->setText("00:00");
         }
     }
 
@@ -158,6 +177,7 @@ QList<QString> MainWindow::getFilesInDirectory()
 
 void MainWindow::playVideo(QString path)
 {
+    m_FFmpegServer->clear();
     m_FFmpegServer->setPlayUrl(path);
 
     int ret = m_FFmpegServer->initInput();
@@ -175,13 +195,7 @@ void MainWindow::playVideo(QString path)
 
     m_FFmpegServer->start();
 
-    //播放后修改按钮ui
-    QPushButton *childButton = ui->controlWidget->findChild<QPushButton*>("pushButton_start");
-    if (childButton)
-    {
-        childButton->setText("stop");
-    }
-
+    setIcon("pushButton_start", 63);//播放图标
 }
 
 void MainWindow::showPlayListView()
@@ -205,26 +219,28 @@ void MainWindow::showImage(QImage image)
 
 void MainWindow::pauseVideo()
 {
-    changeButtonStatus();
     m_FFmpegServer->setPause();
+    if(isPause)
+    {
+        setIcon("pushButton_start", 63);
+    }else{
+        setIcon("pushButton_start", 61);
+    }
+    isPause = !isPause;
+
 }
 
 void MainWindow::soundOff()
 {
     m_FFmpegServer->setSoundOff();
     //图标切换为静音和正常
-
-
-//    QSlider *child = ui->controlWidget->findChild<QSlider*>("horizontalSlider_volume");
-//    if (child)
-//    {
-//        if(isSoundOff)
-//        {
-//            child->setValue(100);
-//        }else{
-//            child->setValue(0);
-//        }
-//    }
+    if(isSoundOff)
+    {
+        setIcon("pushButton_soundOff", 68);//声音图标
+    }else{
+        setIcon("pushButton_soundOff", 69);//声音图标
+    }
+    isSoundOff = !isSoundOff;
 }
 
 void MainWindow::openFile()
@@ -252,18 +268,15 @@ void MainWindow::handleItemDoubleClicked(QListWidgetItem *item)
 
 }
 
-void MainWindow::changeButtonStatus()
+void MainWindow::setIcon(QString btnName, int flag)
 {
-    QPushButton *childButton = ui->controlWidget->findChild<QPushButton*>("pushButton_start");
+    QPushButton *childButton = ui->controlWidget->findChild<QPushButton*>(btnName);
     if (childButton)
     {
-        if(isPause)
-        {
-            childButton->setText("stop");
-        }else{
-            childButton->setText("start");
-        }
-        isPause = !isPause;
+        QStyle *style = QApplication::style();
+        QIcon icon;
+        icon = style->standardIcon((QStyle::StandardPixmap)flag);
+        childButton->setIcon(icon);
     }
 }
 
@@ -300,4 +313,25 @@ void MainWindow::leaveEvent(QEvent *event)
     ui->controlWidget->hide();
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    clear();
+
+
+    // 调用父类的closeEvent以确保正常关闭窗口
+//    QMainWindow::closeEvent(event);
+}
+
+
+void MainWindow::clear()
+{
+    //关闭线程
+    if (m_FFmpegServer->isRunning())
+    {
+        m_FFmpegServer->stopPlay();
+        m_FFmpegServer->quit();
+        m_FFmpegServer->wait(150);
+        m_FFmpegServer->clear();
+    }
+}
 

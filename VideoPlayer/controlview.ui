@@ -51,7 +51,7 @@
     </layout>
    </item>
    <item row="1" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="6,0,2,2">
+    <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="6,0,3,1">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
@@ -64,21 +64,21 @@
        <item>
         <widget class="QPushButton" name="pushButton_previous">
          <property name="text">
-          <string>pre</string>
+          <string/>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_start">
          <property name="text">
-          <string>start</string>
+          <string/>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_next">
          <property name="text">
-          <string>next</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -95,11 +95,11 @@
       <widget class="QComboBox" name="comboBox_speed"/>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="2,8">
+      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,9">
        <item>
         <widget class="QPushButton" name="pushButton_soundOff">
          <property name="text">
-          <string>off</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -124,7 +124,7 @@
        <item>
         <widget class="QPushButton" name="pushButton_list">
          <property name="text">
-          <string>list</string>
+          <string/>
          </property>
         </widget>
        </item>
